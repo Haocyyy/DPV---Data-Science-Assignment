@@ -133,6 +133,7 @@ ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=SumSales2, fill=na
   coord_flip()+
   guides(fill = "none")
 
+#TEST
 
 
 
