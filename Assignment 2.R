@@ -108,7 +108,7 @@ Customer_sales <- sales %>%
   arrange(desc(SumSales)) %>% 
   full_join(customer, by = c("id" = "customerid")) 
 
-#Draw a bar graph
+#Draw a bar graph for figure of best customer
 ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Customer (Top 5)',y='Sales',title = 'Sales per customer')+
@@ -125,15 +125,13 @@ Product_sales <- sales %>%
   arrange(desc(SumSales2)) %>% 
   full_join(product, by = c("id" = "productid")) 
 
-#Draw a bar graph
+#Draw a bar graph for figure of best product
 ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=SumSales2, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Product (Top 5)',y='Sales',title = 'Sales per product')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
-
-#TEST
 
 
 
