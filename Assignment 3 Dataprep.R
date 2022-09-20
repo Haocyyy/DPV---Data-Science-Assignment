@@ -40,22 +40,12 @@ product <- data_main %>%
   ungroup() %>%
   mutate(productid = row_number())
 
-returnstatusid <- data.frame(nr = c(0, 1)
-                             , label = c("Returned", "NotReturned")
+#Make a separate table for returnstatusid
+returnstatusid <- data.frame(returnstatusnr = c(0, 1)
+                             , returnvalue = c("NotReturned", "Returned")
                              )
 
-
-
-
-
-
-
-
-
-
-
-#Make Return table 'return':
-
+#Make Return table 'return' + fulljoin data_returns:
 return <- data_main %>%
   select('Order ID') %>%
   rename(orderid = 'Order ID') %>%
@@ -64,9 +54,21 @@ return <- data_main %>%
   distinct() %>%
   ungroup () %>%
   full_join(data_returns, by = c("orderid" = "Order ID")) %>%
-  mutate(returnstatusid = row_number()) 
+  rename(returnvalue = Status) 
+  
+#Fill in the NoReturns
+return[is.na(return)] <- "NotReturned" 
 
-return[is.na(return)] <- 'NotReturned'
+#Find the returnstatusnr with the returnvalue in table return + rownumbers
+return <- right_join(return, returnstatusid, by = c("returnvalue" = "returnvalue")) %>%
+  mutate (returnstatusid = row_number())
+
+
+
+
+
+
+
 
 
 
