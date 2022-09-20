@@ -45,8 +45,8 @@ returnstatusid <- data.frame(returnstatusnr = c(0, 1)
                              , returnvalue = c("NotReturned", "Returned")
                              )
 
-#Make Return table 'return' + fulljoin data_returns:
-return <- data_main %>%
+#Make ReturnStatus table 'returnstatus' + fulljoin data_returns:
+returnstatus <- data_main %>%
   select('Order ID') %>%
   rename(orderid = 'Order ID') %>%
   arrange(orderid) %>%
@@ -57,11 +57,13 @@ return <- data_main %>%
   rename(returnvalue = Status) 
   
 #Fill in the NoReturns
-return[is.na(return)] <- "NotReturned" 
+returnstatus[is.na(returnstatus)] <- "NotReturned" 
 
 #Find the returnstatusnr with the returnvalue in table return + rownumbers
-return <- right_join(return, returnstatusid, by = c("returnvalue" = "returnvalue")) %>%
+returnstatus <- right_join(returnstatus, returnstatusid, by = c("returnvalue" = "returnvalue")) %>%
   mutate (returnstatusid = row_number())
+
+
 
 
 
