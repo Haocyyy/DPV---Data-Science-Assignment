@@ -50,9 +50,7 @@ sales <-data0 %>%
          customer_name = Customer_Name, customer_country = Customer_Country,
          order_sales = Order_Price_Total, 
          product_sales = Product_Order_Price_Total) %>%
-  arrange(date, product_name, product_category, 
-          customer_name, customer_country,
-          order_sales,product_sales) 
+  arrange(date) 
 
 #Joint product& customer table
 
@@ -99,6 +97,7 @@ library(hrbrthemes)
 library(forcats)
 library(stringr)
 
+###Graph 1
 #Created a new table for figure of best customer
 Customer_sales <- sales %>% 
   select(customerid,order_sales) %>% 
@@ -116,6 +115,7 @@ ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=nam
   coord_flip()+
   guides(fill = "none")
 
+###Graph 2
 #Created a new table for figure of best product
 Product_sales <- sales %>% 
   select(productid,product_sales) %>% 
