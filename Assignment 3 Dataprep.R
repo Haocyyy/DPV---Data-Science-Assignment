@@ -72,6 +72,51 @@ returnstatus[is.na(returnstatus)] <- "NotReturned"
 #Find the returnstatusnr with the returnvalue in table return + rownumbers
 returnstatus <- right_join(returnstatus, returnstatusid, by = c("returnvalue" = "returnvalue"))
 
+#Make the inlined dimension Late 'late' not yet finished, not sure!!!!:
+late <- data_main %>%
+  select('Product Name',
+         'Order Date', 
+         'Ship Date') %>%
+  rename(productname = 'Product Name',
+         orderdate = 'Order Date',
+         shipdate = 'Ship Date') %>%
+  arrange(productname, orderdate, shipdate) %>%
+  right_join(product, by = c("productname" = "name")) %>%
+  select( -category, -subcategory)
+
+#Make the table Sales 'sales':
+sales <-data_main %>%
+  select('Order Date', 
+         'Product Name', 'Product Category', 'Product Sub-Category',
+         'Customer Name', Province, Region, 'Customer Segment',
+         'Order ID',
+         Sales, 'Order Quantity', 'Unit Price', Profit, 'Shipping Cost') %>%
+  rename(date = 'Order Date', 
+         product_name = 'Product Name', product_category = 'Product Category', product_subcategory = 'Product Sub-Category',
+         customer_name = 'Customer Name', customer_province = Province, customer_region = Region, customer_segment = 'Customer Segment', 
+         orderid = 'Order ID',
+         sales_sales = Sales, order_quantity = 'Order Quantity', unit_price = 'Unit Price', sales_profit = Profit, shipping_cost = 'Shipping Cost') %>%
+  arrange(date, product_name, product_category, product_subcategory, customer_name, customer_province, customer_region, customer_segment, orderid, sales_sales, order_quantity, unit_price, sales_profit, shipping_cost) 
+
+#Joint product& customer table
+
+sales <- sales %>%
+  full_join(product, by = c("product_name" = "name", "product_category"="category", "product_subcategory" = "subcategory")) %>%
+  
+  select( -product_name, -product_category, -product_subcategory) %>% 
+  
+  full_join(customer, by = c("customer_name" = "name", "customer_province" = "province", "customer_region" = "region", "customer_segment" = "segment")) %>% 
+  
+  select( -customer_name, -customer_province, -customer_region, -customer_segment)
+
+#Join returnstatusid
+sales <- sales %>%
+  right_join(returnstatus, by = c("orderid" = "orderid")) %>%
+  select ( -returnvalue)
+  
+
+
+
 
 
 
