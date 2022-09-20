@@ -37,7 +37,9 @@ library(stringr)
 Customer_sales <- sales %>% 
   select(customerid,order_sales) %>% 
   rename(id=customerid,sales=order_sales) %>% 
+  arrange(id,sales) %>% 
   group_by(id) %>% 
+  distinct() %>%
   summarise(SumSales = sum(sales)) %>% 
   arrange(desc(SumSales)) %>% 
   full_join(customer, by = c("id" = "customerid")) 
@@ -54,7 +56,9 @@ ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=nam
 Product_sales <- sales %>% 
   select(productid,product_sales) %>% 
   rename(id=productid,sales=product_sales) %>% 
-  group_by(id) %>% 
+  arrange(id,sales) %>% 
+  group_by(id) %>%
+  distinct() %>%
   summarise(SumSales2 = sum(sales)) %>% 
   arrange(desc(SumSales2)) %>% 
   full_join(product, by = c("id" = "productid")) 
