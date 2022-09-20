@@ -22,8 +22,14 @@ head(data_returns)
 
 #Make Customer table 'customer':
 customer <- data_main %>%
-  select('Customer Name', Province, Region, 'Customer Segment') %>%
-  rename(name = 'Customer Name', province = Province, region = Region, segment ='Customer Segment') %>%
+  select('Customer Name', 
+         Province, 
+         Region, 
+         'Customer Segment') %>%
+  rename(name = 'Customer Name', 
+         province = Province, 
+         region = Region, 
+         segment ='Customer Segment') %>%
   arrange(name, province, region, segment) %>%
   group_by(name, province, region, segment) %>%
   distinct() %>%
@@ -32,8 +38,12 @@ customer <- data_main %>%
 
 #Make Product table 'product':
 product <- data_main %>%
-  select('Product Name', 'Product Category', 'Product Sub-Category') %>%
-  rename(name = 'Product Name', category = 'Product Category', subcategory = 'Product Sub-Category') %>%
+  select('Product Name', 
+         'Product Category', 
+         'Product Sub-Category') %>%
+  rename(name = 'Product Name', 
+         category = 'Product Category', 
+         subcategory = 'Product Sub-Category') %>%
   arrange(name, category, subcategory) %>%
   group_by(name, category, subcategory) %>%
   distinct() %>%
@@ -41,8 +51,8 @@ product <- data_main %>%
   mutate(productid = row_number())
 
 #Make a separate table for returnstatusid
-returnstatusid <- data.frame(returnstatusnr = c(0, 1)
-                             , returnvalue = c("NotReturned", "Returned")
+returnstatusid <- data.frame(returnstatusid = c(0, 1), 
+                             returnvalue = c("NotReturned", "Returned")
                              )
 
 #Make ReturnStatus table 'returnstatus' + fulljoin data_returns:
@@ -60,9 +70,7 @@ returnstatus <- data_main %>%
 returnstatus[is.na(returnstatus)] <- "NotReturned" 
 
 #Find the returnstatusnr with the returnvalue in table return + rownumbers
-returnstatus <- right_join(returnstatus, returnstatusid, by = c("returnvalue" = "returnvalue")) %>%
-  mutate (returnstatusid = row_number())
-
+returnstatus <- right_join(returnstatus, returnstatusid, by = c("returnvalue" = "returnvalue"))
 
 
 
