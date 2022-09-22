@@ -57,6 +57,7 @@ sales <-data0 %>%
   distinct() %>%
   ungroup() 
 
+sales$date <- dmy(sales$date)
 #Joint product& customer table
 
 sales <- sales %>%
