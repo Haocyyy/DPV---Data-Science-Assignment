@@ -100,7 +100,7 @@ late$shipdate <- dmy(late$shipdate)
 
 late$nrofdays <- interval(late$orderdate, late$shipdate)/ddays()
 
-late$late <- if_else(late$nrofdays > 0, "Late", "NotLate")
+late$late <- if_else(late$nrofdays > 2, "Late", "NotLate")
 
 #Make the table Sales 'sales':
 sales <-data_main %>%
