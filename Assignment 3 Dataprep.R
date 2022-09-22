@@ -103,12 +103,12 @@ late$late <- if_else(late$nrofdays > 0, "Late", "NotLate")
 
 #Make the table Sales 'sales':
 sales <-data_main %>%
-  select('Order Date', 
+  select('Order Date', 'Unit Price',
          'Product Name', 'Product Category', 'Product Sub-Category',
          'Customer Name', Province, Region, 'Customer Segment',
          'Order ID',
          Sales, 'Order Quantity', 'Unit Price', Profit, 'Shipping Cost') %>%
-  rename(orderdate = 'Order Date', 
+  rename(orderdate = 'Order Date',
          product_name = 'Product Name', product_category = 'Product Category', product_subcategory = 'Product Sub-Category',
          customer_name = 'Customer Name', customer_province = Province, customer_region = Region, customer_segment = 'Customer Segment', 
          orderid = 'Order ID',
@@ -131,7 +131,7 @@ sales <- sales %>%
 #Join returnstatusid + late (not finished):
 sales <- sales %>%
   full_join(returnstatus, by = c("orderid" = "orderid")) %>%
-  select ( -returnvalue) 
+  select ( -returnvalue, -orderid) 
 
 sales <- sales %>%
   full_join(late, by = c("orderdate" = "orderdate", "productid" = "productid", "customerid" = "customerid")) %>%
@@ -139,10 +139,33 @@ sales <- sales %>%
 
 #Group and summarize salestable:
 sales <- sales %>%
-  group_by(productid, customerid, orderdate, returnstatusid, late) %>%
+  group_by(productid, customerid, orderdate, returnstatusid, late, sales, orderquantity, unitprice, profit, shippingcost) %>%
   summarise(sales, profit, orderquantity, shippingcost) %>%
   distinct() %>%
   ungroup() 
+
+# Connect to the PostgreSQL database server -------------------------------
+
+library(DBI)
+library(RPostgreSQL)
+
+drv <- dbDriver("PostgreSQL")
+con <- dbConnect(drv, port = 5432, host = "bronto.ewi.utwente.nl",
+                 dbname = "dab_ds22231a_2", user = "dab_ds22231a_2", password = "dzhmetxI0WPAepIp",
+                 options="-c search_path=ass3")
+
+product <- as.data.frame(product)
+customer <- as.data.frame(customer)
+sales <- as.data.frame(sales)
+returnstatusid <- as.data.frame(returnstatusid)
+returnstatus <- as.data.frame(returnstatus)
+late <- as.data.frame(late)
+dbWriteTable(con, "product", value = product, overwrite = T, row.names = F)
+dbWriteTable(con, "customer", value = customer, overwrite = T, row.names = F)
+dbWriteTable(con, "sales", value = sales, overwrite = T, row.names = F)
+dbWriteTable(con, "returnstatusid", value = returnstatusid, overwrite = T, row.names = F)
+dbWriteTable(con, "returnstatus", value = returnstatus, overwrite = T, row.names = F)
+dbWriteTable(con, "late", value = late, overwrite = T, row.names = F)
 
 
 
