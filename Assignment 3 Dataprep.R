@@ -54,6 +54,7 @@ product <- data_main %>%
 returnstatusid <- data.frame(returnstatusid = c(0, 1), 
                              returnvalue = c("NotReturned", "Returned")
                              )
+returnstatusid$returnstatusid <- as.integer(returnstatusid$returnstatusid)
 
 #Make ReturnStatus table 'returnstatus' + fulljoin data_returns:
 returnstatus <- data_main %>%
@@ -115,7 +116,14 @@ sales <-data_main %>%
          sales = Sales, orderquantity = 'Order Quantity', unitprice = 'Unit Price', profit = Profit, shippingcost = 'Shipping Cost') %>%
   arrange(orderdate, product_name, product_category, product_subcategory, customer_name, customer_province, customer_region, customer_segment, orderid, sales, orderquantity, unitprice, profit, shippingcost)
 
+#Change into the right type
 sales$orderdate <- dmy(sales$orderdate)
+
+sales$profit <- str_replace_all(sales$profit, ",", ".")
+sales$profit <- as.double(sales$profit)
+
+sales$shippingcost <- str_replace_all(sales$shippingcost, ",", ".")
+sales$shippingcost <- as.double(sales$shippingcost)
 
 #Join product& customer table:
 
