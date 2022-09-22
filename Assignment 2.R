@@ -44,15 +44,18 @@ sales <-data0 %>%
   select(Order_Date_Day, 
          Product_Name, Product_Category,
          Customer_Name, Customer_Country,
-         Order_Price_Total,Product_Order_Price_Total) %>%
+         Product_Order_Price_Total) %>%
   rename(date = Order_Date_Day, 
          product_name = Product_Name, product_category = Product_Category,
          customer_name = Customer_Name, customer_country = Customer_Country,
-         order_sales = Order_Price_Total, 
-         product_sales = Product_Order_Price_Total) %>%
+         sales = Product_Order_Price_Total) %>%
   arrange(date, product_name, product_category, 
           customer_name, customer_country,
-          order_sales,product_sales) 
+          sales) %>%
+  group_by(date, product_name, product_category, customer_name, customer_country, sales) %>%
+  summarise(sales) %>%
+  distinct() %>%
+  ungroup() 
 
 #Joint product& customer table
 

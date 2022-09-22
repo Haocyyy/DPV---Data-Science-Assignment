@@ -35,14 +35,15 @@ library(stringr)
 
 #Created a new table for figure of best customer
 Customer_sales <- sales %>% 
-  select(customerid,order_sales) %>% 
-  rename(id=customerid,sales=order_sales) %>% 
+  select(customerid,sales) %>% 
+  rename(id=customerid) %>% 
   arrange(id,sales) %>% 
   group_by(id) %>% 
   distinct() %>%
   summarise(SumSales = sum(sales)) %>% 
   arrange(desc(SumSales)) %>% 
-  full_join(customer, by = c("id" = "customerid")) 
+  full_join(customer, by = c("id" = "customerid")) %>%
+  select( -country)
 
 #Draw a bar graph for figure of best customer
 ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=name))+
@@ -54,14 +55,15 @@ ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=nam
 
 #Created a new table for figure of best product
 Product_sales <- sales %>% 
-  select(productid,product_sales) %>% 
-  rename(id=productid,sales=product_sales) %>% 
+  select(productid,sales) %>% 
+  rename(id=productid) %>% 
   arrange(id,sales) %>% 
   group_by(id) %>%
   distinct() %>%
   summarise(SumSales2 = sum(sales)) %>% 
   arrange(desc(SumSales2)) %>% 
-  full_join(product, by = c("id" = "productid")) 
+  full_join(product, by = c("id" = "productid")) %>%
+  select( -category)
 
 #Draw a bar graph for figure of best product
 ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=SumSales2, fill=name))+
