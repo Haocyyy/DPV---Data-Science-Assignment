@@ -108,20 +108,21 @@ sales <-data_main %>%
          'Customer Name', Province, Region, 'Customer Segment',
          'Order ID',
          Sales, 'Order Quantity', 'Unit Price', Profit, 'Shipping Cost') %>%
-  rename(date = 'Order Date', 
+  rename(orderdate = 'Order Date', 
          product_name = 'Product Name', product_category = 'Product Category', product_subcategory = 'Product Sub-Category',
          customer_name = 'Customer Name', customer_province = Province, customer_region = Region, customer_segment = 'Customer Segment', 
          orderid = 'Order ID',
-         sales_sales = Sales, order_quantity = 'Order Quantity', unit_price = 'Unit Price', sales_profit = Profit, shipping_cost = 'Shipping Cost') %>%
-  arrange(date, product_name, product_category, product_subcategory, customer_name, customer_province, customer_region, customer_segment, orderid, sales_sales, order_quantity, unit_price, sales_profit, shipping_cost) %>%
-  dmy(date)
+         sales = Sales, orderquantity = 'Order Quantity', unitprice = 'Unit Price', profit = Profit, shippingcost = 'Shipping Cost') %>%
+  arrange(orderdate, product_name, product_category, product_subcategory, customer_name, customer_province, customer_region, customer_segment, orderid, sales, orderquantity, unitprice, profit, shippingcost)
 
-#Join product& customer table
+sales$orderdate <- dmy(sales$orderdate)
+
+#Join product& customer table:
 
 sales <- sales %>%
   full_join(product, by = c("product_name" = "name", "product_category"="category", "product_subcategory" = "subcategory")) %>%
   
-  select( -product_name, -product_category, -product_subcategory)
+  select( -product_name, -product_category, -product_subcategory) %>%
   
   full_join(customer, by = c("customer_name" = "name", "customer_province" = "province", "customer_region" = "region", "customer_segment" = "segment")) %>% 
   
@@ -129,10 +130,19 @@ sales <- sales %>%
 
 #Join returnstatusid + late (not finished):
 sales <- sales %>%
-  right_join(returnstatus, by = c("orderid" = "orderid")) %>%
-  select ( -returnvalue) %>%
-  right_join(late, by = c("date" = "orderdate"))
+  full_join(returnstatus, by = c("orderid" = "orderid")) %>%
+  select ( -returnvalue) 
 
+sales <- sales %>%
+  full_join(late, by = c("orderdate" = "orderdate", "productid" = "productid", "customerid" = "customerid")) %>%
+  select ( -nrofdays, -shipdate)
+
+#Group and summarize salestable:
+sales <- sales %>%
+  group_by(productid, customerid, orderdate, returnstatusid, late) %>%
+  summarise(sales, profit, orderquantity, shippingcost) %>%
+  distinct() %>%
+  ungroup() 
 
 
 
