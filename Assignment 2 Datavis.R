@@ -46,7 +46,7 @@ Customer_sales <- sales %>%
   select( -country)
 
 #Draw a bar graph for figure of best customer
-ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=name))+
+best_customer <- ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=SumSales, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Customer (Top 5)',y='Sales',title = 'Sales per customer')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
@@ -66,9 +66,22 @@ Product_sales <- sales %>%
   select( -category)
 
 #Draw a bar graph for figure of best product
-ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=SumSales2, fill=name))+
+best_product <- ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=SumSales2, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Product (Top 5)',y='Sales',title = 'Sales per product')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
+
+#Making a dashboard (install package "patchwork" if not)
+library(patchwork)
+
+dashboard <- (best_customer| best_product) +
+  plot_annotation(
+    title = "Best customers and best products",
+    subtitle = "Assignment 2 of DPV",
+    caption = "Made by ChengHao Yi & Marissa Okkerman"
+  )
+
+
+
