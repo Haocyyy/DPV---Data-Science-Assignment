@@ -48,12 +48,14 @@ Loss_products <- sales %>%
   select( -subcategory)
 
 #Draw a bar graph for figure of most loss-making products:
-Loss_product <- ggplot(Loss_products[1:5,], aes(x=reorder(name, -SumProfit), y=SumProfit, fill=name))+
+Loss_product <- ggplot(Loss_products[1:10,], aes(x=reorder(name, -SumProfit), y=SumProfit, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Product loss (Top 5)',y='Loss',title = 'Loss per product')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
+
+print(Loss_product)
 
 #Created a new table for figure of most late products:
 Late_products <- sales %>% 
@@ -76,9 +78,11 @@ Late_products <- Late_products %>%
 #Draw a bar graph for figure of most late products:
 Late_product <- ggplot(Late_products[1:5,], aes(x=reorder(name, SumLate), y=SumLate, fill=name))+
   geom_col(position="dodge")+   
-  labs(x='Late products (Top 5)',y='Shipping time',title = 'Days late per product')+
+  labs(x='Late products (Top 5)',y='Times late',title = 'Days late per product')+
   coord_flip()+
   guides(fill = "none")
+
+print(Late_product)
 
 
 
