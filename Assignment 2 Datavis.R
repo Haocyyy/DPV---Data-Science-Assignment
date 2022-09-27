@@ -84,7 +84,7 @@ dashboard <- (best_customer| best_product) +
   plot_annotation(
     title = "Best customers and best products",
     subtitle = "Assignment 2 of DPV",
-    caption = "Made by ChengHao Yi & Marissa Okkerman"
+    caption = "Made by ChenHao Yi & Marissa Okkerman"
   )
 print(dashboard)
 
