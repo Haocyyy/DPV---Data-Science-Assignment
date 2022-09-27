@@ -39,8 +39,8 @@ Customer_sales <- sales %>%
   rename(id=customerid) %>% 
   arrange(id,sales) %>% 
   group_by(id) %>% 
-  distinct() %>%
   summarise(SumSales = sum(sales)) %>% 
+  distinct() %>%
   arrange(desc(SumSales)) %>% 
   full_join(customer, by = c("id" = "customerid")) %>%
   select( -country)
@@ -60,8 +60,8 @@ Product_sales <- sales %>%
   rename(id=productid) %>% 
   arrange(id,sales) %>% 
   group_by(id) %>%
-  distinct() %>%
   summarise(SumSales2 = sum(sales)) %>% 
+  distinct() %>%
   arrange(desc(SumSales2)) %>% 
   full_join(product, by = c("id" = "productid")) %>%
   select( -category)
