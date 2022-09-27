@@ -52,6 +52,7 @@ best_customer <- ggplot(Customer_sales[1:5,], aes(x=reorder(name, SumSales), y=S
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
+  print(best_customer)
 
 #Created a new table for figure of best product
 Product_sales <- sales %>% 
@@ -72,6 +73,9 @@ best_product <- ggplot(Product_sales[1:5,], aes(x=reorder(name, SumSales2), y=Su
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
+  print(best_product)
+
+
 
 #Making a dashboard (install package "patchwork" if not)
 library(patchwork)
@@ -82,6 +86,5 @@ dashboard <- (best_customer| best_product) +
     subtitle = "Assignment 2 of DPV",
     caption = "Made by ChengHao Yi & Marissa Okkerman"
   )
-
-
+print(dashboard)
 
