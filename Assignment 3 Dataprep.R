@@ -136,7 +136,7 @@ sales <- sales %>%
   
   select( -customer_name, -customer_province, -customer_region, -customer_segment)
 
-#Join returnstatusid + late (not finished):
+#Join returnstatusid + late:
 sales <- sales %>%
   full_join(returnstatus, by = c("orderid" = "orderid")) %>%
   select ( -returnvalue, -orderid) 
