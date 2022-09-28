@@ -34,6 +34,7 @@ library(ggplot2)
 library(hrbrthemes)
 library(forcats)
 library(stringr)
+library(scales)
 
 #Created a new table for figure of loss-making products:
 Product_sales <- sales %>% 
@@ -47,21 +48,45 @@ Product_sales <- sales %>%
   select( -subcategory)
 
 #Draw a bar graph for figure of loss-making products:
-loss_product <- ggplot(Product_sales[1:5,], aes(x=reorder(name, -SumProfit), y=SumProfit, fill=name))+
+loss_product <- ggplot(Product_sales[1:5,], aes(reorder(x=name, -SumProfit), y=SumProfit, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Product loss (Top 5)',y='Loss',title = 'Loss per product')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
-  guides(fill = "none")
+  guides(fill = "none") +
+  geom_text(aes(label = name),
+            position = position_stack(vjust = 0.5),
+            size=3) +
+  theme(axis.text.y=element_blank())
 print(loss_product)
+
+#Created a new table for figure of loss-making categories:
+Category_sales <- Product_sales %>% 
+  select(-id, -name) %>%
+  arrange(category,SumProfit) %>% 
+  group_by(category) %>%
+  summarise(SumProfit = sum(SumProfit)) %>%
+  arrange(SumProfit) 
+
+#Draw a piechart for figure of loss-making categories:
+loss_category <- ggplot(Category_sales, aes(x="", y=-SumProfit, fill=category)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  labs(x="", y="", title = 'Profit per category') +
+  theme(axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        panel.grid=element_blank()) +
+  geom_text(aes(label = label_number_si()(SumProfit), hjust = 0.25),
+            position = position_stack(vjust = 0.5))
+print(loss_category)
 
 #Created a new table for figure of late products:
 Product_timeslate <- sales %>% 
   select(productid, late) %>% 
   rename(id=productid) %>% 
-  arrange(id,late) %>% 
+  arrange(id,late) %>%
   group_by(id)
-  
+
 Product_timeslate$late <- str_replace_all(Product_timeslate$late, "Late", "1")
 Product_timeslate$late <- str_replace_all(Product_timeslate$late, "NotLate", "0")
 Product_timeslate$late <- as.double(Product_timeslate$late)
@@ -78,8 +103,32 @@ late_product <- ggplot(Product_timeslate[1:5,], aes(x=reorder(name, SumLate), y=
   geom_col(position="dodge")+   
   labs(x='Late products (Top 5)',y='Times late',title = 'Times late per product')+
   coord_flip()+
-  guides(fill = "none")
+  guides(fill = "none") +
+  geom_text(aes(label = name),
+            position = position_stack(vjust = 0.5),
+            size=3) +
+  theme(axis.text.y=element_blank())
 print(late_product)
+
+#Created a new table for figure of late categories:
+Category_timeslate <- Product_timeslate %>% 
+  select(-id, -name) %>%
+  arrange(category,SumLate) %>% 
+  group_by(category) %>%
+  summarise(SumLate = sum(SumLate)) %>%
+  arrange(SumLate) 
+
+#Draw a piechart for figure of late categories:
+late_category <- ggplot(Category_timeslate, aes(x="", y=-SumLate, fill=category)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  labs(x="", y="", title = 'Times late per category') +
+  theme(axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        panel.grid=element_blank()) +
+  geom_text(aes(label = SumLate, hjust = 0.25),
+            position = position_stack(vjust = 0.5))
+print(late_category)
 
 #Created a new table for figure of returned products:
 Product_returns <- sales %>% 
@@ -95,10 +144,49 @@ Product_returns <- sales %>%
 #Draw a bar graph for figure of returned products:
 returns_product <- ggplot(Product_returns[1:5,], aes(x=reorder(name, SumReturned), y=SumReturned, fill=name))+
   geom_col(position="dodge")+   
-  labs(x='Products returned (Top 5)',y='Times returned',title = 'Returns per product')+
+  labs(x='Products returned (Top 5)',y='Times returned per product',title = 'Returns per product')+
   coord_flip()+
-  guides(fill = "none")
+  guides(fill = "none") +
+  geom_text(aes(label = name),
+            position = position_stack(vjust = 0.5),
+            size=3) +
+  theme(axis.text.y=element_blank())
 print(returns_product)
+
+#Created a new table for figure of returned categories:
+Category_returns <- Product_returns %>% 
+  select(-id, -name) %>%
+  arrange(category,SumReturned) %>% 
+  group_by(category) %>%
+  summarise(SumReturned = sum(SumReturned)) %>%
+  arrange(SumReturned) 
+
+#Draw a piechart for figure of returned categories:
+returns_category <- ggplot(Category_returns, aes(x="", y=-SumReturned, fill=category)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  labs(x="", y="", title = 'Times returned per category') +
+  theme(axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        panel.grid=element_blank()) +
+  geom_text(aes(label = SumReturned, hjust = 0.25),
+            position = position_stack(vjust = 0.5))
+print(returns_category)
+
+
+
+
+#Making a dashboard (install package "patchwork" if not)
+library(patchwork)
+
+dashboard <- (loss_product| late_product| returns_product)/
+              (loss_category| late_category| returns_category) +
+  plot_annotation(
+    title = "Profit/loss, times late, and times returned per product & category",
+    subtitle = "Assignment 3 of DPV",
+    caption = "Made by ChenHao Yi & Marissa Okkerman"
+  )
+print(dashboard)
 
 
 
