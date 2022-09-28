@@ -35,54 +35,71 @@ library(hrbrthemes)
 library(forcats)
 library(stringr)
 
-#Created a new table for figure of most loss-making products:
-Loss_products <- sales %>% 
+#Created a new table for figure of loss-making products:
+Product_sales <- sales %>% 
   select(productid, profit) %>% 
   rename(id=productid) %>% 
   arrange(id,profit) %>% 
   group_by(id) %>%
-  distinct() %>%
   summarise(SumProfit = sum(profit)) %>%
   arrange(SumProfit) %>% 
   full_join(product, by = c("id" = "productid")) %>%
   select( -subcategory)
 
-#Draw a bar graph for figure of most loss-making products:
-Loss_product <- ggplot(Loss_products[1:10,], aes(x=reorder(name, -SumProfit), y=SumProfit, fill=name))+
+#Draw a bar graph for figure of loss-making products:
+loss_product <- ggplot(Product_sales[1:5,], aes(x=reorder(name, -SumProfit), y=SumProfit, fill=name))+
   geom_col(position="dodge")+   
   labs(x='Product loss (Top 5)',y='Loss',title = 'Loss per product')+
   scale_y_continuous(labels = function(x) paste(x/1e3,"k"))+
   coord_flip()+
   guides(fill = "none")
+print(loss_product)
 
-print(Loss_product)
-
-#Created a new table for figure of most late products:
-Late_products <- sales %>% 
+#Created a new table for figure of late products:
+Product_timeslate <- sales %>% 
   select(productid, late) %>% 
   rename(id=productid) %>% 
   arrange(id,late) %>% 
   group_by(id)
   
-Late_products$late <- str_replace_all(Late_products$late, "Late", "1")
-Late_products$late <- str_replace_all(Late_products$late, "NotLate", "0")
-Late_products$late <- as.double(Late_products$late)
+Product_timeslate$late <- str_replace_all(Product_timeslate$late, "Late", "1")
+Product_timeslate$late <- str_replace_all(Product_timeslate$late, "NotLate", "0")
+Product_timeslate$late <- as.double(Product_timeslate$late)
 
-Late_products <- Late_products %>%
+Product_timeslate <- Product_timeslate %>%
   na.omit() %>%
   summarise(SumLate = sum(late)) %>%
   arrange(desc(SumLate)) %>%
   left_join(product, by = c("id" = "productid")) %>%
   select( -subcategory)
 
-#Draw a bar graph for figure of most late products:
-Late_product <- ggplot(Late_products[1:5,], aes(x=reorder(name, SumLate), y=SumLate, fill=name))+
+#Draw a bar graph for figure of late products:
+late_product <- ggplot(Product_timeslate[1:5,], aes(x=reorder(name, SumLate), y=SumLate, fill=name))+
   geom_col(position="dodge")+   
-  labs(x='Late products (Top 5)',y='Times late',title = 'Days late per product')+
+  labs(x='Late products (Top 5)',y='Times late',title = 'Times late per product')+
   coord_flip()+
   guides(fill = "none")
+print(late_product)
 
-print(Late_product)
+#Created a new table for figure of returned products:
+Product_returns <- sales %>% 
+  select(productid, returnstatusid) %>% 
+  rename(id=productid) %>% 
+  arrange(id,returnstatusid) %>%
+  group_by(id) %>%
+  summarise(SumReturned = sum(returnstatusid)) %>%
+  arrange(desc(SumReturned)) %>% 
+  full_join(product, by = c("id" = "productid")) %>%
+  select( -subcategory)
+
+#Draw a bar graph for figure of returned products:
+returns_product <- ggplot(Product_returns[1:5,], aes(x=reorder(name, SumReturned), y=SumReturned, fill=name))+
+  geom_col(position="dodge")+   
+  labs(x='Products returned (Top 5)',y='Times returned',title = 'Returns per product')+
+  coord_flip()+
+  guides(fill = "none")
+print(returns_product)
+
 
 
 
