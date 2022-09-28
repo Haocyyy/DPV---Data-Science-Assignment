@@ -40,7 +40,6 @@ Customer_sales <- sales %>%
   arrange(id,sales) %>% 
   group_by(id) %>% 
   summarise(SumSales = sum(sales)) %>% 
-  distinct() %>%
   arrange(desc(SumSales)) %>% 
   full_join(customer, by = c("id" = "customerid")) %>%
   select( -country)
@@ -61,7 +60,6 @@ Product_sales <- sales %>%
   arrange(id,sales) %>% 
   group_by(id) %>%
   summarise(SumSales2 = sum(sales)) %>% 
-  distinct() %>%
   arrange(desc(SumSales2)) %>% 
   full_join(product, by = c("id" = "productid")) %>%
   select( -category)
