@@ -149,8 +149,7 @@ returns_product <- ggplot(Product_returns[1:5,], aes(x=reorder(name, SumReturned
   guides(fill = "none") +
   geom_text(aes(label = name),
             position = position_stack(vjust = 0.5),
-            size=3) +
-  theme(axis.text.y=element_blank())
+            size=3)
 print(returns_product)
 
 #Created a new table for figure of returned categories:
