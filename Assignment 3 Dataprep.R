@@ -70,7 +70,7 @@ returnstatus <- data_main %>%
 #Fill in the NoReturns
 returnstatus[is.na(returnstatus)] <- "NotReturned" 
 
-#Find the returnstatusnr with the returnvalue in table return + rownumbers
+#Find the returnstatusnr with the returnvalue in table return
 returnstatus <- right_join(returnstatus, returnstatusid, by = c("returnvalue" = "returnvalue"))
 
 #Make the inlined dimension Late 'late':
@@ -151,6 +151,10 @@ sales <- sales %>%
   summarise(sales, profit, orderquantity, shippingcost) %>%
   distinct() %>%
   ungroup() 
+
+#Delete rows that are not necessary in tables anymore
+returnstatus <- returnstatus %>%
+  select(-orderid)
 
 # Connect to the PostgreSQL database server -------------------------------
 
